@@ -1,3 +1,6 @@
+[![pipeline status](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/pipeline.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main) 
+[![coverage report](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/coverage.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main) 
+
 ## TestRunner
 
 The idea is to write a test runner software for use with GitLab Runners and to test SWEB implementation.
@@ -9,4 +12,4 @@ To check if a test was successful read the output of the test.
 
 ## GitLab Runner
 
-see how this may work.
+The runner should trigger the SWEB build after changing `user:progs.h`. So the runner can catch a failed build in the pipeline.
