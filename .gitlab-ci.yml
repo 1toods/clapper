@@ -1,0 +1,4 @@
+Build:
+  stage: build
+  script:
+    - echo "Hello Build"
