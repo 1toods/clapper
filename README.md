@@ -13,3 +13,17 @@ To check if a test was successful read the output of the test.
 ## GitLab Runner
 
 The runner should trigger the SWEB build after changing `user:progs.h`. So the runner can catch a failed build in the pipeline.
+
+
+### Other
+
+Build this as a docker image and put the sweb folder as input directory.
+
+## Usage
+Start container. Make sure to point your SWEB directory to `/SWEB/` inside the container.
+Make sure to mount a RAM disk to `/tmp` inside the container to save SSD writes.
+
+Run with:
+```
+docker run --rm -v ~/sweb/:/SWEB/ -v /tmp/:/tmp/ sweb_tester:latest
+```
