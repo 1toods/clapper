@@ -1,0 +1,4 @@
+src/__pycache__/
+README.md
+.gitlab-ci.yml
+.gitignore
