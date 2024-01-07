@@ -20,6 +20,7 @@ The runner should trigger the SWEB build after changing `user:progs.h`. So the r
 Build this as a docker image and put the sweb folder as input directory.
 
 ## Usage
+Build the container with `docker build -t sweb_tester .`.
 Start container. Make sure to point your SWEB directory to `/SWEB/` inside the container.
 Make sure to mount a RAM disk to `/tmp` inside the container to save SSD writes.
 

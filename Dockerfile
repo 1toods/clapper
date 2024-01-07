@@ -7,10 +7,13 @@ RUN apk update \
     && apk add qemu qemu-img qemu-system-x86_64 \
     && rm -rf /var/cache/apk/* \
     && mkdir app \
-    && mkdir SWEB/ \
-    && cd app/
+    && mkdir SWEB/
 
 # how to deal with ramdisk?
 
 COPY ["src/", "app/"]
-CMD ["bash", "app/compile-test.sh"]
+#COPY ["stdout", "/"]
+#COPY ["stderr", "/"]
+#CMD ["bash", "app/compile-test.sh"]
+WORKDIR "/app/"
+ENTRYPOINT ["python3", "main.py"]
