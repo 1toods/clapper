@@ -1,7 +1,7 @@
 [![pipeline status](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/pipeline.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main) 
 [![coverage report](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/coverage.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main) 
 
-## TestRunner
+## Clapper
 
 The idea is to write a test runner software for use with GitLab Runners and to test SWEB implementation.
 
@@ -28,3 +28,5 @@ Run with:
 ```
 docker run --rm -v ~/sweb/:/SWEB/ -v /tmp/:/tmp/ sweb_tester:latest
 ```
+
+Maybe add an exclude function for not running a test...
