@@ -15,15 +15,11 @@ class CompileUtils():
     RUN_TIMEOUT = 3*60
 
     oldUserProgsDir = "/tmp/old_user_progs.h"
+    stdOut = "/tmp/stdout"
+    stdErr = "/tmp/stderr"
 
-    compileCommands = [ "mkdir -p /tmp/sweb",
-                        "cd /tmp/sweb/",
-                        "cmake /SWEB/",
-                        "make -j"]
-
-    #qemu-system-x86_64
-    #QEMU_COMMAND = "qemu-system-x86_64 -m 8M -cpu qemu64 -drive file=SWEB.qcow2,index=0,media=disk -monitor none -nographics -debugcon"
-    QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-debugcon", "/dev/stdout"]
+    #QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-debugcon", "/dev/stdout"]
+    QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-nographic"]
 
     oldUserProgs = None
 
@@ -59,8 +55,8 @@ class CompileUtils():
         needs then a fresh pull for whatever reason...
         '''
 
-        f_stdout = open("/tmp/stdout", 'wt')
-        f_stderr = open("/tmp/stderr", 'wt')
+        f_stdout = open(stdOut, 'wt')
+        f_stderr = open(stdErr, 'wt')
 
         ret = subprocess.run(["cmake", self.workingDir],
                             stderr=subprocess.DEVNULL,
@@ -81,7 +77,7 @@ class CompileUtils():
             f_stdout.close()
             f_stderr.close()
 
-            f_stderr = open("/tmp/stderr", 'rt')
+            f_stderr = open(stdErr, 'rt')
             errorText = f_stderr.read()
             f_stderr.close()
             raise NotCompileException(f'During compilation an error occoured!\n{errorText}')
@@ -135,12 +131,6 @@ class CompileUtils():
 
     def runTests(self) -> None:
         print("Starting Tests...")
-
-        # ret = subprocess.Popen(["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-nographics", "-debugcon"],
-        #                         universal_newlines=True,
-        #                         capture_output=True,
-        #                         timeout=self.COMPILE_TIMEOUT)
-        #output = subprocess.check_output("make -j", timeout=self.COMPILE_TIMEOUT)
 
         #os.chdir("/tmp/sweb/")
         ret = subprocess.Popen(self.QEMU_COMMAND, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
