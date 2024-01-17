@@ -1,6 +1,0 @@
-Build:
-  stage: build
-  tags:
-    - bruno
-  script:
-    - echo "Hello Build"

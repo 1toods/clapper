@@ -111,7 +111,6 @@ def main():
 
     # if we just need to compile, return here
     if arguments.just_compile:
-        print("just compile?")
         return 0
 
     utils.runTests()
