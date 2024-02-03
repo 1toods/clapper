@@ -5,7 +5,11 @@
 
 import os
 import io
+import sys
+import time
+import shlex
 import subprocess
+import pexpect
 
 from SwebExceptions import *
 
@@ -14,17 +18,21 @@ class CompileUtils():
     COMPILE_TIMEOUT = 180
     RUN_TIMEOUT = 3*60
 
-    oldUserProgsDir = "/tmp/old_user_progs.h"
-    stdOut = "/tmp/stdout"
-    stdErr = "/tmp/stderr"
+    oldUserProgsDir = "/tmp/clapper/old_user_progs.h"
+    stdOut = "/tmp/clapper/stdout"
+    stdErr = "/tmp/clapper/stderr"
+    stdIn = "/tmp/clapper/stdin"
+    logsDirectory = "/tmp/clapper/logs/"
 
-    #QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-debugcon", "/dev/stdout"]
-    QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-nographic"]
+    # original:  qemu-system-x86_64 -m 8M -drive file=SWEB.qcow2,index=0,media=disk -debugcon stdio -no-reboot -cpu qemu64
+    QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-nographic" ]# -serial stdio"]
 
     oldUserProgs = None
+    testsToRun = [ ]
 
     def __init__(self, workingDir):
         self.workingDir = workingDir
+        open(self.oldUserProgsDir, 'w+').close()
 
     def getOldUserProgs(self) -> [ ]:
         userProgsText = ""
@@ -50,19 +58,24 @@ class CompileUtils():
         subprocess.run(["mkdir", "-p", "/tmp/sweb/"], stdout=subprocess.DEVNULL)
         os.chdir("/tmp/sweb/")
 
-        '''
-        compiling does fail when switching from hand<->testrunner. the repository
-        needs then a fresh pull for whatever reason...
-        '''
+        f_stdout = open(self.stdOut, 'wt')
+        f_stderr = open(self.stdErr, 'wt')
 
-        f_stdout = open(stdOut, 'wt')
-        f_stderr = open(stdErr, 'wt')
+        sys.stdout.write("Configure SWEB...")
+        sys.stdout.flush()
 
         ret = subprocess.run(["cmake", self.workingDir],
                             stderr=subprocess.DEVNULL,
                             universal_newlines=True,
                             shell=False,
                             timeout=self.COMPILE_TIMEOUT)
+
+        sys.stdout.write("finished.\n")
+        sys.stdout.flush()
+
+        sys.stdout.write("Build SWEB...")
+        sys.stdout.flush()
+
 
         ret = subprocess.run(["make", "-j"],
                             stdout=f_stdout,
@@ -77,18 +90,21 @@ class CompileUtils():
             f_stdout.close()
             f_stderr.close()
 
-            f_stderr = open(stdErr, 'rt')
+            f_stderr = open(self.stdErr, 'rt')
             errorText = f_stderr.read()
             f_stderr.close()
-            raise NotCompileException(f'During compilation an error occoured!\n{errorText}')
-            return
+            raise NotCompileException(f'n\During compilation an error occoured!\n{errorText}')
 
-        print("SWEB compiled successfully!")
+        sys.stdout.write("finished.\n")
+        sys.stdout.flush()
+
         f_stdout.close()
         f_stderr.close()
 
     def addTest(self, testsToRun) -> None:
         # TODO: change position to insert before shell!
+
+        self.testsToRun = testsToRun
 
         self.saveUserProgs()
 
@@ -97,8 +113,10 @@ class CompileUtils():
         oldUserProgsText = self.oldUserProgs.read()
         self.oldUserProgs.close()
 
-        insertPos = oldUserProgsText.find('shell.sweb')
-        insertPos = insertPos + 12
+        #insertPos = oldUserProgsText.find('shell.sweb')
+        insertPos = oldUserProgsText.find('automated testing')
+        #insertPos = insertPos + 12
+        insertPos = insertPos + 17
 
         if insertPos == -1:
             raise ValueError("user_progs.h needs to contain shell.sweb as reference!")
@@ -129,27 +147,49 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    def runTests(self) -> None:
-        print("Starting Tests...")
+    def writeToChild(self, text):
+        bytesText = bytes(text, 'utf-8') + b'\n'
+        writtenChars = self.child.stdin.write(text + '\n')
+        self.child.stdin.flush()
 
-        #os.chdir("/tmp/sweb/")
-        ret = subprocess.Popen(self.QEMU_COMMAND, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        stdout, stderr = ret.communicate()
+        if writtenChars != len(bytesText):
+            print("something went wrong by writing to stdin!")
 
-        print(stdout)
-        print(stderr)
+    def communicateWithChild(self, text):
+        bytesText = bytes(text, 'utf-8') + b'\n'
+        data = self.child.communicate(input=bytesText)
+        print(f'data from communication: {data}')
 
-        #print(f'compiler returned with code {ret.returncode}')
+    def runTestsSeperated(self) -> None:
+        print("Starting Tests:")
 
-        # find out how to conect to qemu...
-        if ret.returncode != 0:
-            # some error happened. catch that
-            self.restoreUserProc()
-            raise QemuRuntimeError(f'An error occoured during Qemu runtime! [Error: {ret.returncode}\n{stdout}]')
+        # run tests seperated. restart qemu for every one.
+        # if this works all tests can be tested at once
+        for testName in self.testsToRun:
+            sys.stdout.write(f'{testName}...')
+            sys.stdout.flush()
 
-        #output = ret.check_output("")
+            logFileName = f'{self.logsDirectory}{testName}.log'
 
-        #output = subprocess.check_output((CATCH_COMMAND), stdin=ret.stdout)
-        #ret.wait()
+            os.chdir("/tmp/sweb/")
+            
+            # this command works in terminal
+            # but gives error when used with debugcon flag with python!
 
-        raise NotImplementedError("This functionallity is not implemented yet!")
+            # this does work and the shell output is being put into the logfile
+            child = subprocess.Popen(
+                self.QEMU_COMMAND + [ f'-debugcon', f'file:{logFileName}' ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                universal_newlines=True)
+
+            # close io files if qemu had an error
+            if child.returncode != 0:                
+                print(f'Error during runtime [{child.returncode}]!\nStdERR: {child.stderr.read()}')
+                child.terminate()
+                continue
+
+            # TODO: capture and analyze output
+
+            child.wait()
+        print("finished")

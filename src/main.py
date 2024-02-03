@@ -1,13 +1,22 @@
 #! /bin/python3
 
 import os
+import sys
 import time
 import argparse
+import traceback
 
 from CompileUtils import CompileUtils
 from SwebExceptions import *
 
 workingDir = ""
+
+def init():
+    if not os.path.exists("/tmp/clapper/"):
+            os.makedirs("/tmp/clapper/")
+
+    if not os.path.exists("/tmp/clapper/logs"):
+        os.makedirs("/tmp/clapper/logs/")
 
 def getAllTests() -> [ ]:
     tests = [ ]
@@ -113,10 +122,15 @@ def main():
     if arguments.just_compile:
         return 0
 
-    utils.runTests()
+    try:
+        utils.runTestsSeperated()
+    except:
+        print(f'Error during runtime!\nException: {sys.exc_info()}')
+        print(f'Traceback: {traceback.print_exc()}')
 
     # the last thing before exiting
     utils.restoreUserProc()
 
 if __name__ == '__main__':
+    init()
     main()
