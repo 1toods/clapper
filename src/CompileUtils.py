@@ -24,7 +24,6 @@ class CompileUtils():
     stdIn = "/tmp/clapper/stdin"
     logsDirectory = "/tmp/clapper/logs/"
 
-    # original:  qemu-system-x86_64 -m 8M -drive file=SWEB.qcow2,index=0,media=disk -debugcon stdio -no-reboot -cpu qemu64
     QEMU_COMMAND = ["qemu-system-x86_64", "-m", "8M", "-cpu", "qemu64", "-drive", "file=SWEB.qcow2,index=0,media=disk", "-monitor", "none", "-nographic" ]# -serial stdio"]
 
     oldUserProgs = None
@@ -75,7 +74,6 @@ class CompileUtils():
 
         sys.stdout.write("Build SWEB...")
         sys.stdout.flush()
-
 
         ret = subprocess.run(["make", "-j"],
                             stdout=f_stdout,
@@ -164,17 +162,12 @@ class CompileUtils():
         print("Starting Tests:")
 
         # run tests seperated. restart qemu for every one.
-        # if this works all tests can be tested at once
         for testName in self.testsToRun:
-            sys.stdout.write(f'{testName}...')
-            sys.stdout.flush()
-
+            os.chdir("/tmp/sweb/")
             logFileName = f'{self.logsDirectory}{testName}.log'
 
-            os.chdir("/tmp/sweb/")
-            
-            # this command works in terminal
-            # but gives error when used with debugcon flag with python!
+            sys.stdout.write(f'{testName}...')
+            sys.stdout.flush()
 
             # this does work and the shell output is being put into the logfile
             child = subprocess.Popen(
