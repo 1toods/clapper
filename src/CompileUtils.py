@@ -145,19 +145,6 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    def writeToChild(self, text):
-        bytesText = bytes(text, 'utf-8') + b'\n'
-        writtenChars = self.child.stdin.write(text + '\n')
-        self.child.stdin.flush()
-
-        if writtenChars != len(bytesText):
-            print("something went wrong by writing to stdin!")
-
-    def communicateWithChild(self, text):
-        bytesText = bytes(text, 'utf-8') + b'\n'
-        data = self.child.communicate(input=bytesText)
-        print(f'data from communication: {data}')
-
     def runTestsSeperated(self) -> None:
         print("Starting Tests:")
 
