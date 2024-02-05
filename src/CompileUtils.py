@@ -16,7 +16,7 @@ from SwebExceptions import *
 class CompileUtils():
 
     COMPILE_TIMEOUT = 180
-    RUN_TIMEOUT = 3*60
+    RUN_TIMEOUT = 5
 
     oldUserProgsDir = "/tmp/clapper/old_user_progs.h"
     stdOut = "/tmp/clapper/stdout"
@@ -164,12 +164,23 @@ class CompileUtils():
                 universal_newlines=True)
 
             # close io files if qemu had an error
-            if child.returncode != 0:                
-                print(f'Error during runtime [{child.returncode}]!\nStdERR: {child.stderr.read()}')
-                child.terminate()
-                continue
+            #if child.returncode != 0:
+            #    print(f'Error during runtime [{child.returncode}]!\nStdERR: {child.stderr.read()}')
+            #    child.terminate()
+            #    continue
 
             # TODO: capture and analyze output
+            # wait runtimeout and then kill the child
+            time.sleep(self.RUN_TIMEOUT)
+            child.terminate()
 
-            child.wait()
-        print("finished")
+            with open(logFileName, 'r') as logFile:
+                #allLines = logFile.readlines()
+                #eofLine = allLines[-1]
+                
+                for line in logFile:
+                    if "SUCCESS" in line:
+                        print("SUCCESS!")
+                    #    continue
+                    #elif line == eofLine:
+                    #    raise LogOutputNotFound(f'NO SUCCESS or FAILURE was found in logfile!\nlast line: {line}')

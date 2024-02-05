@@ -17,3 +17,8 @@ class QemuRuntimeError(Exception):
     def __init__(self, errorText):
         self.errorText = errorText
         super().__init__(self.errorText)
+
+class LogOutputNotFound(Exception):
+    def __init__(self, errorText):
+        self.errorText = errorText
+        super().__init__(self.errorText)
