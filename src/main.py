@@ -103,14 +103,14 @@ def main():
         allFoundTests = getAllTests()
         specifyedTests = [ ]
 
+        # save all tests in a list
         for test in arguments.run_test:
             specifyedTests.append(f'{test}.sweb')
 
+        # double check if given tests actually exist
         for test in specifyedTests:
             if not (test in allFoundTests):
                 raise TestNotFoundException(f'Your specifyed test "{test}" was not found!')
-
-        utils.addTest(specifyedTests)
 
     # here comes the advanced stuff
     if not arguments.run_all and not arguments.run_test:
@@ -122,14 +122,12 @@ def main():
     if arguments.just_compile:
         return 0
 
-    try:
-        utils.runTestsSeperated()
-    except:
-        print(f'Error during runtime!\nException: {sys.exc_info()}')
-        print(f'Traceback: {traceback.print_exc()}')
-
-    # the last thing before exiting
-    utils.restoreUserProc()
+    # run all tests on its own
+    utils.saveUserProgs()
+    for test in specifyedTests:
+        utils.addTest(test)
+        utils.runTest(test)
+        utils.restoreUserProc()
 
 if __name__ == '__main__':
     init()

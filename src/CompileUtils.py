@@ -16,7 +16,7 @@ from SwebExceptions import *
 class CompileUtils():
 
     COMPILE_TIMEOUT = 180
-    RUN_TIMEOUT = 5
+    RUN_TIMEOUT = 7
 
     oldUserProgsDir = "/tmp/clapper/old_user_progs.h"
     stdOut = "/tmp/clapper/stdout"
@@ -44,8 +44,10 @@ class CompileUtils():
         return userProgsText
 
     def saveUserProgs(self):
-        if self.oldUserProgs is None:
-            self.oldUserProgs = open(self.oldUserProgsDir, 'w+')
+        #if self.oldUserProgs is None:
+        #    self.oldUserProgs = open(self.oldUserProgsDir, 'w+')
+
+        self.oldUserProgs = open(self.oldUserProgsDir, 'w')
 
         userProgs = open(f'{self.workingDir}common/include/kernel/user_progs.h', 'r+')
         self.oldUserProgs.write(userProgs.read())
@@ -99,37 +101,27 @@ class CompileUtils():
         f_stdout.close()
         f_stderr.close()
 
-    def addTest(self, testsToRun) -> None:
-        # TODO: change position to insert before shell!
-
-        self.testsToRun = testsToRun
-
-        self.saveUserProgs()
-
+    def addTest(self, testToRun) -> None:
         # find location where to insert new tests
         self.oldUserProgs = open(self.oldUserProgsDir, 'r+')
         oldUserProgsText = self.oldUserProgs.read()
         self.oldUserProgs.close()
 
-        #insertPos = oldUserProgsText.find('shell.sweb')
         insertPos = oldUserProgsText.find('automated testing')
-        #insertPos = insertPos + 12
         insertPos = insertPos + 17
 
         if insertPos == -1:
-            raise ValueError("user_progs.h needs to contain shell.sweb as reference!")
+            raise ValueError("user_progs.h has to contain teh original comment on line 5 as reference!")
 
         # build insert string
-        insertString = ""
-        for test in testsToRun:
-            insertString += f'\n                            "/usr/{test}",'
-        insertString += '\n'
+        insertString = f'\n                            "/usr/{testToRun}",\n'
 
         # insert string
         prefixString = oldUserProgsText[:insertPos]
         appendString = oldUserProgsText[insertPos+1:]
         newUserProgs = prefixString + insertString + appendString
 
+        # write string
         userProgs = open(f'{self.workingDir}common/include/kernel/user_progs.h', 'w+')
         userProgs.write(newUserProgs)
         userProgs.close()
@@ -145,42 +137,32 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    def runTestsSeperated(self) -> None:
-        print("Starting Tests:")
-
+    def runTest(self, testName) -> None:
         # run tests seperated. restart qemu for every one.
-        for testName in self.testsToRun:
-            os.chdir("/tmp/sweb/")
-            logFileName = f'{self.logsDirectory}{testName}.log'
+        os.chdir("/tmp/sweb/")
+        logFileName = f'{self.logsDirectory}{testName}.log'
 
-            sys.stdout.write(f'{testName}...')
-            sys.stdout.flush()
+        sys.stdout.write(f'{testName}...')
+        sys.stdout.flush()
 
-            # this does work and the shell output is being put into the logfile
-            child = subprocess.Popen(
-                self.QEMU_COMMAND + [ f'-debugcon', f'file:{logFileName}' ],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-                universal_newlines=True)
+        # TODO: configure so that gitlab runner sees the stdio output!
+        child = subprocess.Popen(
+            self.QEMU_COMMAND + [ f'-debugcon', f'file:{logFileName}' ],
+            stdout=subprocess.PIPE, # otherwise no userspace test output is in logfile!
+            stderr=subprocess.PIPE,
+            universal_newlines=True)
 
-            # close io files if qemu had an error
-            #if child.returncode != 0:
-            #    print(f'Error during runtime [{child.returncode}]!\nStdERR: {child.stderr.read()}')
-            #    child.terminate()
-            #    continue
+        # wait runtimeout and then kill the child
+        time.sleep(self.RUN_TIMEOUT)
+        child.terminate()
 
-            # TODO: capture and analyze output
-            # wait runtimeout and then kill the child
-            time.sleep(self.RUN_TIMEOUT)
-            child.terminate()
+        with open(logFileName, 'r') as logFile:            
+            # TODO: this does fail but it shouldnt!
+            # check os and testcase!
+            for line in logFile:
+                if "SUCCESS" in line:
+                    print("SUCCESS!")
+                    return
 
-            with open(logFileName, 'r') as logFile:
-                #allLines = logFile.readlines()
-                #eofLine = allLines[-1]
-                
-                for line in logFile:
-                    if "SUCCESS" in line:
-                        print("SUCCESS!")
-                    #    continue
-                    #elif line == eofLine:
-                    #    raise LogOutputNotFound(f'NO SUCCESS or FAILURE was found in logfile!\nlast line: {line}')
+            print("ERROR")
+                    
