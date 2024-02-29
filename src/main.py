@@ -123,6 +123,7 @@ def main():
         return 0
 
     # run all tests on its own
+    # TODO: sometimes the programs don't get run or no output is provided!
     utils.saveUserProgs()
     for test in specifyedTests:
         utils.addTest(test)

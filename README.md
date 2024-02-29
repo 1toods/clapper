@@ -1,5 +1,5 @@
-[![pipeline status](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/pipeline.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main) 
-[![coverage report](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/coverage.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main) 
+[![pipeline status](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/pipeline.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main)
+[![coverage report](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/coverage.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main)
 
 ## Clapper
 
@@ -14,17 +14,33 @@ To check if a test was successful read the output of the test.
 
 The runner should trigger the SWEB build after changing `user:progs.h`. So the runner can catch a failed build in the pipeline.
 
-
 ### Other
 
 Build this as a docker image and put the sweb folder as input directory.
 
 ## Usage
+
+Run without docker:
+
+`python3 src/main.py -s [SWEB DIRECTORY] [additional flags].`
+
+Flags to choose from:
+
+| Flag | Description                                                          |
+| ---- | -------------------------------------------------------------------- |
+| -c   | just compile                                                         |
+| -r   | run test. specify just name, e.g: test for test.c in userspace/tests |
+| -a   | run all found tests.                                                 |
+| -l   | list all tests in userspace/tests                                    |
+
+
+
 Build the container with `docker build -t sweb_tester .`.
 Start container. Make sure to point your SWEB directory to `/SWEB/` inside the container.
 Make sure to mount a RAM disk to `/tmp` inside the container to save SSD writes.
 
 Run with:
+
 ```
 docker run --rm -v ~/sweb/:/SWEB/ -v /tmp/:/tmp/ sweb_tester:latest
 ```
