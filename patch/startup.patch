@@ -1,0 +1,10 @@
+diff --git a/utils/images/menu.lst b/utils/images/menu.lst
+index cf7fd93d..b813cd5b 100644
+--- a/utils/images/menu.lst
++++ b/utils/images/menu.lst
+@@ -1,4 +1,4 @@
+-
++timeout 0
+ default 0
+ 
+ title = Sweb

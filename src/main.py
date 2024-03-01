@@ -97,18 +97,20 @@ def main():
         return 0
 
     if arguments.run_all:
-        utils.addTest(getAllTests())
+        print("Not implemented!")
+        return
 
+    testsToRun = [ ]
     if arguments.run_test:
         allFoundTests = getAllTests()
-        specifyedTests = [ ]
+        #specifyedTests = [ ]
 
         # save all tests in a list
         for test in arguments.run_test:
-            specifyedTests.append(f'{test}.sweb')
+            testsToRun.append(f'{test}.sweb')
 
         # double check if given tests actually exist
-        for test in specifyedTests:
+        for test in testsToRun:
             if not (test in allFoundTests):
                 raise TestNotFoundException(f'Your specifyed test "{test}" was not found!')
 
@@ -116,16 +118,17 @@ def main():
     if not arguments.run_all and not arguments.run_test:
         utils.saveUserProgs()
 
-    utils.compileSWEB()
-
     # if we just need to compile, return here
     if arguments.just_compile:
+        utils.compileSWEB()
         return 0
 
+    # just in case
+    utils.compileSWEB()
+
     # run all tests on its own
-    # TODO: sometimes the programs don't get run or no output is provided!
     utils.saveUserProgs()
-    for test in specifyedTests:
+    for test in testsToRun:
         utils.addTest(test)
         utils.runTest(test)
         utils.restoreUserProc()

@@ -163,6 +163,5 @@ class CompileUtils():
                 if "SUCCESS" in line:
                     print("SUCCESS!")
                     return
-
             print("ERROR")
                     

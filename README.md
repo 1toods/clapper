@@ -1,5 +1,3 @@
-[![pipeline status](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/pipeline.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main)
-[![coverage report](https://gitlab.tugraz.at/fatcookie/sweb_tester/badges/main/coverage.svg)](https://gitlab.tugraz.at/fatcookie/sweb_tester/-/commits/main)
 
 ## Clapper
 
@@ -35,6 +33,22 @@ Flags to choose from:
 
 
 
+Just compile SWEB: \
+
+```
+python3 src/main.py -s ~/sweb/ -c
+```
+
+
+
+Run one test: \
+
+```
+python3 src/main.py -s ~/sweb/ -r hello-world
+```
+
+
+Not Needed:
 Build the container with `docker build -t sweb_tester .`.
 Start container. Make sure to point your SWEB directory to `/SWEB/` inside the container.
 Make sure to mount a RAM disk to `/tmp` inside the container to save SSD writes.
