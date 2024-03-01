@@ -1,0 +1,3 @@
+in file utils/images/menu.lst
+add this to first line:
+timeout 0
