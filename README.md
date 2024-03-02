@@ -47,11 +47,9 @@ Flags to choose from:
 | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | -c   | Just compile.                                                                                                                                                                                   |
 | -r   | Run test. specify just name, e.g: test for test.c in userspace/tests.                                                                                                                           |
-| -a   | Run all found tests.                                                                                                                                                                            |
+| -a   | Run all found tests, except of `multi` and `shell`.                                                                                                                                         |
 | -l   | List all tests in userspace/tests.                                                                                                                                                              |
 | -t   | Timeout in seconds. Defaults to 7. This is also the time after which a test is shut down to check the output log. This means that the `timeout` flag also specifyes the runtime of each test. |
-
-
 
 ### Working Examples
 
