@@ -19,6 +19,7 @@ class CompileUtils():
     RUN_TIMEOUT = 0
 
     oldUserProgsDir = "/tmp/clapper/old_user_progs.h"
+    currentUserProgsDir = "/common/include/kernel/user_progs.h"
     stdOut = "/tmp/clapper/stdout"
     stdErr = "/tmp/clapper/stderr"
     stdIn = "/tmp/clapper/stdin"
@@ -100,11 +101,11 @@ class CompileUtils():
 
     def addTest(self, testToRun) -> None:
         # find location where to insert new tests
-        self.oldUserProgs = open(self.oldUserProgsDir, 'r+')
-        oldUserProgsText = self.oldUserProgs.read()
-        self.oldUserProgs.close()
+        userProgs = open(self.workingDir + self.currentUserProgsDir, 'r+')
+        userProgsText = userProgs.read()
+        userProgs.close()
 
-        insertPos = oldUserProgsText.find('automated testing')
+        insertPos = userProgsText.find('automated testing')
         insertPos = insertPos + 17
 
         if insertPos == -1:
@@ -114,8 +115,8 @@ class CompileUtils():
         insertString = f'\n                            "/usr/{testToRun}",\n'
 
         # insert string
-        prefixString = oldUserProgsText[:insertPos]
-        appendString = oldUserProgsText[insertPos+1:]
+        prefixString = userProgsText[:insertPos]
+        appendString = userProgsText[insertPos+1:]
         newUserProgs = prefixString + insertString + appendString
 
         # write string
@@ -183,4 +184,4 @@ class CompileUtils():
             for line in logFile:
                 if "SUCCESS" in line:
                     passedTestsCounter += 1
-        print(f'->{passedTestsCounter} SUCCESFUL tests from {numTests} tests!')
+        print(f'-> {passedTestsCounter} SUCCESFUL tests from {numTests} tests!')
