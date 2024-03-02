@@ -53,13 +53,13 @@ Flags to choose from:
 
 ### Working Examples
 
-Just compile SWEB: \
+Just compile SWEB:
 
 ```
 python3 src/main.py -s ~/sweb/ -c
 ```
 
-Run one test: \
+Run one test:
 
 ```
 python3 src/main.py -s ~/sweb/ -r hello-world
@@ -75,5 +75,3 @@ Run with:
 ```
 docker run --rm -v ~/sweb/:/SWEB/ -v /tmp/:/tmp/ sweb_tester:latest
 ```
-
-Maybe add an exclude function for not running a test...
