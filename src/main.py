@@ -78,8 +78,19 @@ def main():
         help='Set specific SWEB directory. Do not use with docker.'
     )
 
+    parser.add_argument(
+        '-t',
+        '--timeout',
+        nargs='+',
+        help='Specifyes timeout after which a test automatically fails if no SUCCESS flag has been found in the output log.'
+    )
+
     # check input arguments
     arguments = parser.parse_args()
+
+    runnerTimeout = 7
+    if arguments.timeout:
+        runnerTimeout = int(arguments.timeout[0])
 
     if arguments.sweb_dir:
         global workingDir
@@ -88,7 +99,7 @@ def main():
         workingDir = "/SWEB/"
 
     changeToWorkingDir()
-    utils = CompileUtils(workingDir)
+    utils = CompileUtils(workingDir, runnerTimeout)
 
     if arguments.list_tests:
         allTests = getAllTests()

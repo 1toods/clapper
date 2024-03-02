@@ -16,7 +16,7 @@ from SwebExceptions import *
 class CompileUtils():
 
     COMPILE_TIMEOUT = 180
-    RUN_TIMEOUT = 7
+    RUN_TIMEOUT = 0
 
     oldUserProgsDir = "/tmp/clapper/old_user_progs.h"
     stdOut = "/tmp/clapper/stdout"
@@ -29,8 +29,9 @@ class CompileUtils():
     oldUserProgs = None
     testsToRun = [ ]
 
-    def __init__(self, workingDir):
+    def __init__(self, workingDir: str, timeout: int):
         self.workingDir = workingDir
+        self.RUN_TIMEOUT = timeout
         open(self.oldUserProgsDir, 'w+').close()
 
     def getOldUserProgs(self) -> [ ]:
