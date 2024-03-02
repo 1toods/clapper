@@ -99,13 +99,13 @@ def main():
         workingDir = "/SWEB/"
 
     changeToWorkingDir()
-    utils = CompileUtils(workingDir, runnerTimeout) # no global!
+    utils = CompileUtils(workingDir, runnerTimeout)
 
     if arguments.list_tests:
         allTests = getAllTests()
         for test in allTests:
             print(test)
-        return 0
+        return
 
     if arguments.run_all:
         utils.saveUserProgs()
@@ -116,7 +116,6 @@ def main():
     testsToRun = [ ]
     if arguments.run_test:
         allFoundTests = getAllTests()
-        #specifyedTests = [ ]
 
         # save all tests in a list
         for test in arguments.run_test:
@@ -127,26 +126,20 @@ def main():
             if not (test in allFoundTests):
                 raise TestNotFoundException(f'Your specifyed test "{test}" was not found!')
 
-    # here comes the advanced stuff
-    if not arguments.run_all and not arguments.run_test:
-        utils.saveUserProgs()
-
     # if we just need to compile, return here
     if arguments.just_compile:
         utils.compileSWEB()
         return 0
 
-    # just in case
-    utils.compileSWEB()
-
     # run all tests on its own
     utils.saveUserProgs()
     for test in testsToRun:
         utils.addTest(test)
+        utils.compileSWEB()
         try:
             utils.runTest(test)
         except Exception as e:
-            print(f"Something went wrong running the test!\n{e}")
+            print(f"ERROR!\n->Something went wrong during testrun!\n{e}")
         utils.restoreUserProc()
 
 if __name__ == '__main__':

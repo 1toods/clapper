@@ -139,7 +139,6 @@ class CompileUtils():
 
     # run one specifyed test and check log for SUCCESS flag.
     def runTest(self, testName) -> None:
-        # run tests seperated. restart qemu for every one.
         os.chdir("/tmp/sweb/")
         logFileName = f'{self.logsDirectory}{testName}.log'
 
@@ -147,6 +146,7 @@ class CompileUtils():
         sys.stdout.flush()
 
         # TODO: configure so that gitlab runner sees the stdio output!
+        # TODO: sometimes no logfile will be created...why???
         child = subprocess.Popen(
             self.QEMU_COMMAND + [ f'-debugcon', f'file:{logFileName}' ],
             stdout=subprocess.PIPE, # otherwise no userspace test output is in logfile!
