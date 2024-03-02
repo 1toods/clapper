@@ -9,6 +9,8 @@ import traceback
 from CompileUtils import CompileUtils
 from SwebExceptions import *
 
+# in seconds
+RUNNER_DEFAULT_TIMEOUT = 7
 workingDir = ""
 
 def init():
@@ -85,10 +87,10 @@ def main():
         help='Specifyes timeout after which a test automatically fails if no SUCCESS flag has been found in the output log.'
     )
 
-    # check input arguments
+    # check and parse input arguments
     arguments = parser.parse_args()
 
-    runnerTimeout = 7
+    runnerTimeout = RUNNER_DEFAULT_TIMEOUT
     if arguments.timeout:
         runnerTimeout = int(arguments.timeout[0])
 

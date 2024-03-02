@@ -41,13 +41,9 @@ class CompileUtils():
             self.oldUserProgs = open(self.oldUserProgsDir, 'r+')
             userProgsText = self.oldUserProgs.read()
             userProgsFile.close()
-
         return userProgsText
 
     def saveUserProgs(self):
-        #if self.oldUserProgs is None:
-        #    self.oldUserProgs = open(self.oldUserProgsDir, 'w+')
-
         self.oldUserProgs = open(self.oldUserProgsDir, 'w')
 
         userProgs = open(f'{self.workingDir}common/include/kernel/user_progs.h', 'r+')
@@ -129,7 +125,7 @@ class CompileUtils():
 
     def restoreUserProc(self) -> None:
         oldUserProgsText = ""
-        self.oldUserProgs = open(self.oldUserProgsDir, 'r+') # cant find file!
+        self.oldUserProgs = open(self.oldUserProgsDir, 'r+')
 
         oldUserProgsText = self.oldUserProgs.read()
         self.oldUserProgs.close()
@@ -145,8 +141,7 @@ class CompileUtils():
         sys.stdout.write(f'{testName}...')
         sys.stdout.flush()
 
-        # TODO: configure so that gitlab runner sees the stdio output!
-        # TODO: sometimes no logfile will be created...why???
+        # TODO: configure so that gitlab runner sees the stdio output
         child = subprocess.Popen(
             self.QEMU_COMMAND + [ f'-debugcon', f'file:{logFileName}' ],
             stdout=subprocess.PIPE, # otherwise no userspace test output is in logfile!
@@ -157,12 +152,9 @@ class CompileUtils():
         time.sleep(self.RUN_TIMEOUT)
         child.terminate()
 
-        with open(logFileName, 'r') as logFile:            
-            # TODO: this does fail but it shouldnt!
-            # check os and testcase!
+        with open(logFileName, 'r') as logFile:
             for line in logFile:
                 if "SUCCESS" in line:
                     print("SUCCESS!")
                     return
             print("ERROR")
-                    
