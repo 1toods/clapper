@@ -27,7 +27,7 @@ def getAllTests() -> [ ]:
     for file in testFiles:
         if file.endswith('.c'):
             fileName = file[:-2]
-            if fileName == "shell":
+            if fileName == "shell" or fileName == "mult":
                 continue
             tests.append(f'{fileName}.sweb')
     return tests
@@ -130,6 +130,7 @@ def main():
 
         # save all tests in a list
         for test in arguments.run_test:
+            # filter out shell and multi
             testsToRun.append(f'{test}.sweb')
 
         # double check if given tests actually exist
