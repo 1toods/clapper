@@ -116,12 +116,13 @@ def main():
     # if we just need to compile, return here
     if arguments.just_compile:
         utils.compileSWEB()
-        return 0
+        return
 
     # run all tests on its own
     utils.saveUserProgs()
     for test in testsToRun:
         utils.addTest(test)
+        utils.compileSWEB()
         utils.runTest(test)
         utils.restoreUserProc()
 
