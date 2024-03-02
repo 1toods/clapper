@@ -110,7 +110,18 @@ def main():
         return
 
     if arguments.run_all:
-        print("Not implemented!")
+        utils.saveUserProgs()
+
+        # first add all tests
+        testsToRun = getAllTests()
+        for test in testsToRun:
+            utils.addTest(test)
+        
+        # now compile and start sweb
+        utils.compileSWEB()
+        utils.runMultipleTests(testsToRun)
+
+        utils.restoreUserProc()
         return
 
     testsToRun = [ ]

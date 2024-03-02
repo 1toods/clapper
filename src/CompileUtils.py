@@ -90,7 +90,7 @@ class CompileUtils():
             f_stderr = open(self.stdErr, 'rt')
             errorText = f_stderr.read()
             f_stderr.close()
-            raise NotCompileException(f'n\During compilation an error occoured!\n{errorText}')
+            raise NotCompileException(f'\nDuring compilation an error occoured!\n{errorText}')
 
         sys.stdout.write("finished.\n")
         sys.stdout.flush()
@@ -134,13 +134,15 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    def runTest(self, testName) -> None:
-        os.chdir("/tmp/sweb/")
-        logFileName = f'{self.logsDirectory}{testName}.log'
-
-        sys.stdout.write(f'{testName}...')
-        sys.stdout.flush()
-
+    def _parseTestLogfile(self, logFileName: str) -> int:
+        with open(logFileName, 'r') as logFile:
+            for line in logFile:
+                if "SUCCESS" in line:
+                    print("SUCCESS!")
+                    return
+            print("ERROR")
+    
+    def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
         child = subprocess.Popen(
             self.QEMU_COMMAND + [ f'-debugcon', f'file:{logFileName}' ],
@@ -152,9 +154,33 @@ class CompileUtils():
         time.sleep(self.RUN_TIMEOUT)
         child.terminate()
 
+    def runTest(self, testName) -> None:
+        os.chdir("/tmp/sweb/")
+        logFileName = f'{self.logsDirectory}{testName}.log'
+
+        sys.stdout.write(f'{testName}...')
+        sys.stdout.flush()
+
+        # run tests and parse output
+        self._runQemu(logFileName, self.RUN_TIMEOUT)        
+        self._parseTestLogfile(logFileName)
+
+    def runMultipleTests(self, testsToRun: []) -> None:
+        numTests = len(testsToRun)
+        os.chdir("/tmp/sweb/")
+
+        logFileName = f'{numTests}_tests.log'
+
+        collectiveTimeout = self.RUN_TIMEOUT * numTests
+        print(f'Waiting for tests to finish. This may take {collectiveTimeout} seconds.')
+        
+        # now start qemu
+        self._runQemu(logFileName, collectiveTimeout)
+        
+        # and then parse logfile for every test
+        passedTestsCounter = 0
         with open(logFileName, 'r') as logFile:
             for line in logFile:
                 if "SUCCESS" in line:
-                    print("SUCCESS!")
-                    return
-            print("ERROR")
+                    passedTestsCounter += 1
+        print(f'->{passedTestsCounter} SUCCESFUL tests from {numTests} tests!')
