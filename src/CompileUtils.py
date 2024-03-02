@@ -16,7 +16,7 @@ from SwebExceptions import *
 class CompileUtils():
 
     COMPILE_TIMEOUT = 180
-    RUN_TIMEOUT = 0
+    RUN_TIMEOUT = 7
 
     oldUserProgsDir = "/tmp/clapper/old_user_progs.h"
     stdOut = "/tmp/clapper/stdout"
@@ -29,7 +29,7 @@ class CompileUtils():
     oldUserProgs = None
     testsToRun = [ ]
 
-    def __init__(self, workingDir, timeout=7):
+    def __init__(self, workingDir):
         self.workingDir = workingDir
         open(self.oldUserProgsDir, 'w+').close()
 
@@ -137,7 +137,6 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    # run one specifyed test and check log for SUCCESS flag.
     def runTest(self, testName) -> None:
         os.chdir("/tmp/sweb/")
         logFileName = f'{self.logsDirectory}{testName}.log'
@@ -165,10 +164,4 @@ class CompileUtils():
                     print("SUCCESS!")
                     return
             print("ERROR")
-
-    # this runs all tests at one startup.
-    def runTestList(self, testList: [ ]) -> None:
-        print("This is not implemented yet!")
-
-        # TODO: get log reading out of runTest
-        return
+                    

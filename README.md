@@ -1,3 +1,4 @@
+
 ## Clapper
 
 The idea is to write a test runner software for use with GitLab Runners and to test SWEB implementation.
@@ -9,59 +10,43 @@ To check if a test was successful read the output of the test.
 
 ## GitLab Runner
 
-The runner should trigger the SWEB build after changing `user_progs.h`. So the runner can catch a failed build in the pipeline.
+The runner should trigger the SWEB build after changing `user:progs.h`. So the runner can catch a failed build in the pipeline.
 
-## Prerequisites
+### Other
 
-### Prepare SWEB
-
-Before you can start the runner, you should add the following line to a file in your SWEB repository:
-`timeout 0`
-This has to go in the file `utils/images/menu.list`
-
-### Passing Example Test
-
-```
-#include "stdio.h"
-
-int main()
-{
-  // do something
-  // when everything went fine...
-  print("SUCCESS\n");
-  return 0;
-}
-```
-
-When no `SUCCESS` is being printed, or the test runs in a timeout (7 seconds) the runner assumes that the test failed.
+Build this as a docker image and put the sweb folder as input directory.
 
 ## Usage
 
-Run normal docker:
+Run without docker:
 
 `python3 src/main.py -s [SWEB DIRECTORY] [additional flags].`
 
 Flags to choose from:
 
-| Flag | Description                                                                                                                                                                                     |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| -c   | Just compile.                                                                                                                                                                                   |
-| -r   | Run test. specify just name, e.g: test for test.c in userspace/tests.                                                                                                                           |
-| -a   | Run all found tests.                                                                                                                                                                            |
-| -l   | List all tests in userspace/tests.                                                                                                                                                              |
-| -t   | Timeout in seconds. Defaults to 7. This is also the time after which a test is shut down to check the output log. This means that the `timeout` flag also specifyes the runtime of each test. |
+| Flag | Description                                                          |
+| ---- | -------------------------------------------------------------------- |
+| -c   | just compile                                                         |
+| -r   | run test. specify just name, e.g: test for test.c in userspace/tests |
+| -a   | run all found tests.                                                 |
+| -l   | list all tests in userspace/tests                                    |
 
-Just compile SWEB:
+
+
+Just compile SWEB: \
 
 ```
 python3 src/main.py -s ~/sweb/ -c
 ```
 
-Run one test:
+
+
+Run one test: \
 
 ```
 python3 src/main.py -s ~/sweb/ -r hello-world
 ```
+
 
 Not Needed:
 Build the container with `docker build -t sweb_tester .`.
@@ -73,3 +58,5 @@ Run with:
 ```
 docker run --rm -v ~/sweb/:/SWEB/ -v /tmp/:/tmp/ sweb_tester:latest
 ```
+
+Maybe add an exclude function for not running a test...
