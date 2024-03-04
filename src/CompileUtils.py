@@ -139,9 +139,9 @@ class CompileUtils():
         with open(logFileName, 'r') as logFile:
             for line in logFile:
                 if "SUCCESS" in line:
-                    print("SUCCESS!")
+                    print("PASS!")
                     return
-            print("ERROR")
+            print("FAIL!")
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output

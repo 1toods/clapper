@@ -96,7 +96,7 @@ def main():
 
     if arguments.sweb_dir:
         global workingDir
-        workingDir = arguments.sweb_dir[0]
+        workingDir = arguments.sweb_dir[0] + '/'
     else:
         workingDir = "/SWEB/"
 
