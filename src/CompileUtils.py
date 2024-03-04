@@ -10,6 +10,7 @@ import time
 import shlex
 import subprocess
 import pexpect
+from colorama import Fore, Back, Style
 
 from SwebExceptions import *
 
@@ -139,9 +140,9 @@ class CompileUtils():
         with open(logFileName, 'r') as logFile:
             for line in logFile:
                 if "SUCCESS" in line:
-                    print("PASS!")
+                    print(Fore.GREEN + "PASS!")
                     return
-            print("FAIL!")
+            print(Fore.RED +"FAIL!")
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
@@ -184,4 +185,4 @@ class CompileUtils():
             for line in logFile:
                 if "SUCCESS" in line:
                     passedTestsCounter += 1
-        print(f'-> {passedTestsCounter} SUCCESFUL tests from {numTests} tests!')
+        print(Fore.GREEN + f'-> {passedTestsCounter} SUCCESFUL tests from {numTests} tests!')
