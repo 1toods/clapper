@@ -53,7 +53,7 @@ def main():
     
     # this should be the default setting
     parser.add_argument(
-        '-a',
+        '-b',
         '--run-all',
         action='store_true',
         help='Runs all available tests in sequence.'
@@ -85,6 +85,13 @@ def main():
         '--timeout',
         nargs='+',
         help='Specifyes timeout after which a test automatically fails if no SUCCESS flag has been found in the output log.'
+    )
+
+    parser.add_argument(
+        '-a',
+        '--serialized',
+        action='store_true',
+        help='Runs all tests serialized, but boots SWEB for every test.'
     )
 
     # check and parse input arguments
@@ -124,9 +131,8 @@ def main():
         utils.restoreUserProc()
         return
 
-    testsToRun = [ ]
     if arguments.run_test:
-        allFoundTests = getAllTests()
+        testsToRun = getAllTests()
 
         # save all tests in a list
         for test in arguments.run_test:
@@ -143,13 +149,16 @@ def main():
         utils.compileSWEB()
         return
 
-    # run all tests on its own
-    utils.saveUserProgs()
-    for test in testsToRun:
-        utils.addTest(test)
-        utils.compileSWEB()
-        utils.runTest(test)
-        utils.restoreUserProc()
+    # seriaziled mode
+    if arguments.serialized:
+        testsToRun = getAllTests()
+        utils.saveUserProgs()
+        for test in testsToRun:
+            utils.addTest(test)
+            # need to compile for every tes for user_progs changes to apply
+            utils.compileSWEB()
+            utils.runTest(test)
+            utils.restoreUserProc()
 
 if __name__ == '__main__':
     init()

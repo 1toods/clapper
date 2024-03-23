@@ -14,6 +14,8 @@ from colorama import Fore, Back, Style
 
 from SwebExceptions import *
 
+invalid_error = "MinixFSInode::loadChildren: inode nr. 14 not set in bitmap, but occurs in directory-entry; maybe filesystem was not properly unmounted last time"
+
 class CompileUtils():
 
     COMPILE_TIMEOUT = 180
@@ -136,13 +138,18 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    def _parseTestLogfile(self, logFileName: str) -> int:
+    def _parseTestLogfile(self, logFileName: str) -> None:
         with open(logFileName, 'r') as logFile:
+            testSucc = False
             for line in logFile:
                 if "SUCCESS" in line:
-                    print(Fore.GREEN + "PASS!")
+                    print(Fore.GREEN + "PASS!" + '\033[39m')
                     return
-            print(Fore.RED +"FAIL!")
+                if invalid_error in line:
+                    testSucc = False
+                    print(Fore.YELLOW + "INVALID!" + '\033[39m')
+                    return
+        print(Fore.RED +"FAIL!" + '\033[39m')
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
@@ -174,15 +181,44 @@ class CompileUtils():
         logFileName = f'{numTests}_tests.log'
 
         collectiveTimeout = self.RUN_TIMEOUT * numTests
-        print(f'Waiting for tests to finish. This may take {collectiveTimeout} seconds.')
+        print(f'Waiting for tests to finish. Estimated duration: {collectiveTimeout} seconds.')
         
         # now start qemu
         self._runQemu(logFileName, collectiveTimeout)
         
-        # and then parse logfile for every test
-        passedTestsCounter = 0
+        # this is not accurate!
+        # muss das logfile nach testname parsen...
+        testResults = { }
+        parsedTestsCounter = 0
         with open(logFileName, 'r') as logFile:
             for line in logFile:
                 if "SUCCESS" in line:
-                    passedTestsCounter += 1
-        print(Fore.GREEN + f'-> {passedTestsCounter} SUCCESFUL tests from {numTests} tests!')
+                    testName = testsToRun[parsedTestsCounter]
+                    testResults[testName] = 1
+
+                    parsedTestsCounter += 1
+                if "ERROR" in line:
+                    testName = testsToRun[parsedTestsCounter]
+                    testResults[testName] = 0
+
+                    parsedTestsCounter += 1
+
+        print("----- Test Results -----")
+
+        succededTestsCounter = 0
+        print(Fore.GREEN + "-> SUCCESSFUL tests:" + '\033[39m')
+        #print('\033[39m') # reset color
+        for test in testResults:
+            if testResults[test] == 1:
+                print("  " + test)
+                succededTestsCounter += 1
+
+        print("-----")
+
+        print(Fore.RED + "-> FAILED tests:" + '\033[39m')
+        for test in testResults:
+            if testResults[test] == 0:
+                print("  " + test)
+
+        print("-----")
+        print(f"{succededTestsCounter} of {len(testsToRun)} tests succeeded.")
