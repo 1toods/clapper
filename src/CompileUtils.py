@@ -63,20 +63,22 @@ class CompileUtils():
         f_stdout = open(self.stdOut, 'wt')
         f_stderr = open(self.stdErr, 'wt')
 
-        sys.stdout.write("Configure SWEB...")
-        sys.stdout.flush()
+        #sys.stdout.write("Configure SWEB...")
+        #sys.stdout.flush()
 
         ret = subprocess.run(["cmake", self.workingDir],
-                            stderr=subprocess.DEVNULL,
+                            #stderr=subprocess.DEVNULL,
+                            stdout=f_stdout,
+                            stderr=f_stderr,
                             universal_newlines=True,
                             shell=False,
                             timeout=self.COMPILE_TIMEOUT)
 
-        sys.stdout.write("finished.\n")
-        sys.stdout.flush()
+        #sys.stdout.write("finished.\n")
+        #sys.stdout.flush()
 
-        sys.stdout.write("Build SWEB...")
-        sys.stdout.flush()
+        #sys.stdout.write("Build SWEB...")
+        #sys.stdout.flush()
 
         ret = subprocess.run(["make", "-j"],
                             stdout=f_stdout,
@@ -96,7 +98,7 @@ class CompileUtils():
             f_stderr.close()
             raise NotCompileException(f'\nDuring compilation an error occoured!\n{errorText}')
 
-        sys.stdout.write("finished.\n")
+        #sys.stdout.write("finished.\n")
         sys.stdout.flush()
 
         f_stdout.close()
