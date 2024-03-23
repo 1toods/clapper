@@ -13,6 +13,8 @@ The runner should trigger the SWEB build after changing `user_progs.h`. So the r
 
 ## Prerequisites
 
+First dependencies must be installed with `pip3 install -r requirements.txt`.
+
 ### Prepare SWEB
 
 Before you can start the runner, you should add the following line to a file in your SWEB repository:
@@ -47,9 +49,10 @@ Flags to choose from:
 | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | -c   | Just compile.                                                                                                                                                                                   |
 | -r   | Run test. specify just name, e.g: test for test.c in userspace/tests.                                                                                                                           |
-| -a   | Run all found tests, except of `multi` and `shell`.                                                                                                                                         |
+| -a   | Run all tests Serialized, except of `multi` and `shell`. Boots SWEB for every test.                                                                                                                                        |
 | -l   | List all tests in userspace/tests.                                                                                                                                                              |
 | -t   | Timeout in seconds. Defaults to 7. This is also the time after which a test is shut down to check the output log. This means that the `timeout` flag also specifyes the runtime of each test. |
+ | -b   | Run all found tests, except of `multi` and `shell`. No Boot between tests. [This does not work right now]
 
 ### Working Examples
 
