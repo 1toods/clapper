@@ -13,7 +13,7 @@ from colorama import Fore, Back, Style
 # in seconds
 RUNNER_DEFAULT_TIMEOUT = 7
 workingDir = ""
-excludeTests = [ "shell", "multi", "clock_test" ]
+excludeTests = [ "shell", "mult", "clock_test" ]
 
 def init():
     if not os.path.exists("/tmp/clapper/"):
