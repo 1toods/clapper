@@ -96,6 +96,7 @@ class CompileUtils():
             f_stderr = open(self.stdErr, 'rt')
             errorText = f_stderr.read()
             f_stderr.close()
+            print(Fore.RED +"FAIL!" + '\033[39m')
             raise NotCompileException(f'\nDuring compilation an error occoured!\n{errorText}')
 
         #sys.stdout.write("finished.\n")
@@ -173,6 +174,8 @@ class CompileUtils():
         sys.stdout.flush()
 
         # run tests and parse output
+        self.addTest(testName)
+        self.compileSWEB()
         self._runQemu(logFileName, self.RUN_TIMEOUT)        
         self._parseTestLogfile(logFileName)
 

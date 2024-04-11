@@ -8,6 +8,7 @@ import traceback
 
 from CompileUtils import CompileUtils
 from SwebExceptions import *
+from colorama import Fore, Back, Style
 
 # in seconds
 RUNNER_DEFAULT_TIMEOUT = 7
@@ -125,14 +126,25 @@ def main():
             utils.addTest(test)
         
         # now compile and start sweb
+        sys.stdout.write("Compile SWEB...")
+        sys.stdout.flush()
         utils.compileSWEB()
+        print(Fore.GREEN + "PASS!" + '\033[39m')
+
         utils.runMultipleTests(testsToRun)
 
         utils.restoreUserProc()
         return
 
+    # -r
     if arguments.run_test:
-        testsToRun = getAllTests()
+        allFoundTests = getAllTests()
+        testsToRun = [ ]
+
+        sys.stdout.write("Compile SWEB...")
+        sys.stdout.flush()
+        utils.compileSWEB()
+        print(Fore.GREEN + "PASS!" + '\033[39m')
 
         # save all tests in a list
         for test in arguments.run_test:
@@ -140,17 +152,29 @@ def main():
             testsToRun.append(f'{test}.sweb')
 
         # double check if given tests actually exist
+        utils.saveUserProgs()
         for test in testsToRun:
             if not (test in allFoundTests):
                 raise TestNotFoundException(f'Your specifyed test "{test}" was not found!')
+            utils.runTest(test)
+            utils.restoreUserProc()
 
     # if we just need to compile, return here
     if arguments.just_compile:
+        sys.stdout.write("Compile SWEB...")
+        sys.stdout.flush()
         utils.compileSWEB()
+        print(Fore.GREEN + "PASS!" + '\033[39m')
         return
 
     # seriaziled mode
     if arguments.serialized:
+        # first try to compile, just once for user to see
+        sys.stdout.write("Compile SWEB...")
+        sys.stdout.flush()
+        utils.compileSWEB()
+        print(Fore.GREEN + "PASS!" + '\033[39m')
+
         testsToRun = getAllTests()
         utils.saveUserProgs()
         for test in testsToRun:
