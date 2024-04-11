@@ -167,7 +167,7 @@ def main():
         print(Fore.GREEN + "PASS!" + '\033[39m')
         return
 
-    # seriaziled mode
+    # seriaziled mode -a
     if arguments.serialized:
         # first try to compile, just once for user to see
         sys.stdout.write("Compile SWEB...")
@@ -178,8 +178,7 @@ def main():
         testsToRun = getAllTests()
         utils.saveUserProgs()
         for test in testsToRun:
-            utils.addTest(test)
-            # need to compile for every tes for user_progs changes to apply
+            # need to compile for every test for user_progs changes to apply
             utils.compileSWEB()
             utils.runTest(test)
             utils.restoreUserProc()
