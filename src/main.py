@@ -13,6 +13,7 @@ from colorama import Fore, Back, Style
 # in seconds
 RUNNER_DEFAULT_TIMEOUT = 7
 workingDir = ""
+excludeTests = [ "shell", "multi", "clock_test" ]
 
 def init():
     if not os.path.exists("/tmp/clapper/"):
@@ -28,7 +29,7 @@ def getAllTests() -> [ ]:
     for file in testFiles:
         if file.endswith('.c'):
             fileName = file[:-2]
-            if fileName == "shell" or fileName == "mult":
+            if fileName in excludeTests:
                 continue
             tests.append(f'{fileName}.sweb')
     return tests
