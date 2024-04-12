@@ -1,3 +1,4 @@
+![publish-image](https://github.com/github/docs/actions/workflows/publish-image.yml/badge.svg)
 ## Clapper
 
 The idea is to write a test runner software for use with GitLab Runners and to test SWEB implementation.
