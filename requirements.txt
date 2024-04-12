@@ -1,1 +1,2 @@
 colorama==0.4.6
+pexpect==4.8.0
