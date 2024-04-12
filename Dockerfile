@@ -9,11 +9,10 @@ RUN apk update \
     && mkdir app \
     && mkdir SWEB/
 
-# how to deal with ramdisk?
-
+# better extra copy for build cache
+COPY ["requirements.txt", "/app/requirements.txt"]
 COPY ["src/", "app/"]
-#COPY ["stdout", "/"]
-#COPY ["stderr", "/"]
-#CMD ["bash", "app/compile-test.sh"]
+
 WORKDIR "/app/"
-ENTRYPOINT ["python3", "main.py"]
+RUN pip install -r requirements.txt --break-system-packages
+ENTRYPOINT ["python3", "main.py", "-s", "/SWEB/", "-a", "-t", "15"]
