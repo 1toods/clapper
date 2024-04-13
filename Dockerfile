@@ -14,6 +14,6 @@ COPY ["requirements.txt", "/app/requirements.txt"]
 COPY ["src/", "app/"]
 
 WORKDIR "/app/"
-RUN pip install -r requirements.txt --break-system-packages
+RUN pip install --no-cache-dir -r requirements.txt --break-system-packages
 
-ENTRYPOINT ["python3", "main.py", "-s", "/SWEB/", "-l"]
+ENTRYPOINT ["python3", "main.py"]
