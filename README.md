@@ -46,7 +46,6 @@ Flags to choose from:
 | -a   | Run all tests Serialized, except of `multi` and `shell`. Boots SWEB for every test.                                                                                                                                        |
 | -l   | List all tests in userspace/tests.                                                                                                                                                              |
 | -t   | Timeout in seconds. Defaults to 7. This is also the time after which a test is shut down to check the output log. This means that the `timeout` flag also specifyes the runtime of each test. |
- | -b   | Run all found tests, except of `multi` and `shell`. No Boot between tests. [This does not work right now]
 
 ### Working Examples
 

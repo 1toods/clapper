@@ -52,14 +52,6 @@ def main():
         action='store_true',
         help='Shows a list of available tests to run.'
     )
-    
-    # this should be the default setting
-    parser.add_argument(
-        '-b',
-        '--run-all',
-        action='store_true',
-        help='Runs all available tests in sequence.'
-    )
 
     parser.add_argument(
         '-r',
@@ -116,25 +108,6 @@ def main():
         allTests = getAllTests()
         for test in allTests:
             print(test)
-        return
-
-    if arguments.run_all:
-        utils.saveUserProgs()
-
-        # first add all tests
-        testsToRun = getAllTests()
-        for test in testsToRun:
-            utils.addTest(test)
-        
-        # now compile and start sweb
-        sys.stdout.write("Compile SWEB...")
-        sys.stdout.flush()
-        utils.compileSWEB()
-        print(Fore.GREEN + "PASS!" + '\033[39m')
-
-        utils.runMultipleTests(testsToRun)
-
-        utils.restoreUserProc()
         return
 
     # -r
