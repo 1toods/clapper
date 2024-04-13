@@ -1,19 +1,9 @@
 [![Build and Publish](https://github.com/1toods/clapper/actions/workflows/publish-image.yml/badge.svg)](https://github.com/1toods/clapper/actions/workflows/publish-image.yml)
 ## Clapper
 
-The idea is to write a test runner software for use with GitLab Runners and to test SWEB implementation.
+This runner changes the `user_progs.h` file by adding a test and then compiling and starting SWEB with quemu. When the Test runs for the specifyed timeout, quemu gets stopped and the logfile gets checked. Unfortunally qemu does not write live to a logfile, so we need to wait for a timeout and can not check when a test has finished.
 
-## Tester Idea
-
-The basic idea is to read the ``/userspace/tests/`` directory and put all the test files into ``common/include/kernel/user_progs.h``. After the tests run, remove all added tests from the file again to not mess with versioning.
-To check if a test was successful read the output of the test.
-
-# TODO
-- need to check if no success or error ran into timeout!
-
-## GitLab Runner
-
-The runner should trigger the SWEB build after changing `user_progs.h`. So the runner can catch a failed build in the pipeline.
+This script can be executed locally via python, in a docker container and is supposed to be used in a gitlab runner.
 
 ## Prerequisites
 
@@ -72,7 +62,12 @@ Run one test:
 python3 src/main.py -s ~/sweb/ -r hello-world
 ```
 
-Not Needed:
+Run all found tests with a custom timeout of 15 seconds:
+```
+python3 src/main.py -s ~/sweb/ -a -t 15
+```
+
+## Docker
 Build the container with `docker build -t sweb_tester .`.
 Start container. Make sure to point your SWEB directory to `/SWEB/` inside the container.
 Make sure to mount a RAM disk to `/tmp` inside the container to save SSD writes.
@@ -80,5 +75,7 @@ Make sure to mount a RAM disk to `/tmp` inside the container to save SSD writes.
 Run with:
 
 ```
-docker run --rm -v ~/sweb/:/SWEB/ -v /tmp/:/tmp/ sweb_tester:latest
+docker run --rm -v ~/path/to/sweb/repo/:/SWEB/ -v /tmp/:/tmp/ clapper:latest [ ARGUMENTS LIST ]
 ```
+
+> Note that the `-s` argument is already passed to the runner via the Dockerfile, you just have to mount the right directory to the container.

@@ -15,4 +15,5 @@ COPY ["src/", "app/"]
 
 WORKDIR "/app/"
 RUN pip install -r requirements.txt --break-system-packages
-ENTRYPOINT ["python3", "main.py", "-s", "/SWEB/", "-a", "-t", "15"]
+
+ENTRYPOINT ["python3", "main.py", "-s", "/SWEB/"]
