@@ -16,4 +16,4 @@ COPY ["src/", "app/"]
 WORKDIR "/app/"
 RUN pip install --no-cache-dir -r requirements.txt --break-system-packages
 
-ENTRYPOINT ["python3", "main.py"]
+#ENTRYPOINT ["python3", "main.py"]
