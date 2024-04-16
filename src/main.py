@@ -149,13 +149,19 @@ def main():
         utils.compileSWEB()
         print(Fore.GREEN + "PASS!" + '\033[39m')
 
+        testsFail = False
         testsToRun = getAllTests()
         utils.saveUserProgs()
         for test in testsToRun:
             # need to compile for every test for user_progs changes to apply
             utils.compileSWEB()
-            utils.runTest(test)
+            if not utils.runTest(test):
+                testsFail = True
             utils.restoreUserProc()
+        
+        # so gitlab ci detects an error
+        if testsFailed:
+            exit(1)
 
 if __name__ == '__main__':
     init()

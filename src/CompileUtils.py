@@ -141,18 +141,20 @@ class CompileUtils():
         userProgs.write(oldUserProgsText)
         userProgs.close()
 
-    def _parseTestLogfile(self, logFileName: str) -> None:
+    # returns true if test was successful
+    def _parseTestLogfile(self, logFileName: str) -> bool:
         with open(logFileName, 'r') as logFile:
             testSucc = False
             for line in logFile:
                 if "SUCCESS" in line:
                     print(Fore.GREEN + "PASS!" + '\033[39m')
-                    return
+                    return True
                 if invalid_error in line:
                     testSucc = False
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
-                    return
+                    return True
         print(Fore.RED +"FAIL!" + '\033[39m')
+        return False
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
@@ -166,7 +168,9 @@ class CompileUtils():
         time.sleep(self.RUN_TIMEOUT)
         child.terminate()
 
-    def runTest(self, testName) -> None:
+    # returns true if test was successful
+    # returns false if test had an error
+    def runTest(self, testName) -> bool:
         os.chdir("/tmp/sweb/")
         logFileName = f'{self.logsDirectory}{testName}.log'
 
@@ -176,8 +180,12 @@ class CompileUtils():
         # run tests and parse output
         self.addTest(testName)
         self.compileSWEB()
-        self._runQemu(logFileName, self.RUN_TIMEOUT)        
-        self._parseTestLogfile(logFileName)
+        self._runQemu(logFileName, self.RUN_TIMEOUT)
+
+        testResult = self._parseTestLogfile(logFileName)
+        if testResult:
+            return True
+        return False
 
     def runMultipleTests(self, testsToRun: []) -> None:
         numTests = len(testsToRun)
