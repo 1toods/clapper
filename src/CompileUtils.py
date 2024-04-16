@@ -142,9 +142,8 @@ class CompileUtils():
         userProgs.close()
 
     # returns true if test was successful
-    def _parseTestLogfile(self, logFileName: str) -> bool:
+    def _parseTestLogfile(self, logFileName: str, printLogOnFail) -> bool:
         with open(logFileName, 'r') as logFile:
-            print(logFile.read())
             testSucc = False
             for line in logFile:
                 if "SUCCESS" in line:
@@ -154,6 +153,10 @@ class CompileUtils():
                     testSucc = False
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
                     return True
+        if printLogOnFail:
+            logFile = open(logFileName, 'r')
+            print(logFile.read())
+            logFile.close()
         print(Fore.RED +"FAIL!" + '\033[39m')
         return False
     
@@ -171,7 +174,7 @@ class CompileUtils():
 
     # returns true if test was successful
     # returns false if test had an error
-    def runTest(self, testName) -> bool:
+    def runTest(self, testName, printLogOnFail=False) -> bool:
         os.chdir("/tmp/sweb/")
         logFileName = f'{self.logsDirectory}{testName}.log'
 
@@ -183,7 +186,7 @@ class CompileUtils():
         self.compileSWEB()
         self._runQemu(logFileName, self.RUN_TIMEOUT)
 
-        testResult = self._parseTestLogfile(logFileName)
+        testResult = self._parseTestLogfile(logFileName, printLogOnFail)
         if testResult:
             return True
         return False
