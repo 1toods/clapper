@@ -13,7 +13,7 @@ from colorama import Fore, Back, Style
 # in seconds
 RUNNER_DEFAULT_TIMEOUT = 7
 workingDir = ""
-excludeTests = [ "shell", "mult", "clock_test" ]
+excludeTests = [ "shell", "mult", "clock_test", "fail_test" ]
 
 def init():
     if not os.path.exists("/tmp/clapper/"):
@@ -22,15 +22,16 @@ def init():
     if not os.path.exists("/tmp/clapper/logs"):
         os.makedirs("/tmp/clapper/logs/")
 
-def getAllTests() -> [ ]:
+def getAllTests(noExclude=False) -> [ ]:
     tests = [ ]
     testFiles = os.listdir(f'{workingDir}userspace/tests/')
     # filter out unwanted files
     for file in testFiles:
         if file.endswith('.c'):
             fileName = file[:-2]
-            if fileName in excludeTests:
-                continue
+            if not noExclude:
+                if fileName in excludeTests:
+                    continue
             tests.append(f'{fileName}.sweb')
     return tests
 
@@ -112,7 +113,7 @@ def main():
 
     # -r
     if arguments.run_test:
-        allFoundTests = getAllTests()
+        allFoundTests = getAllTests(noExclude=True)
         testsToRun = [ ]
 
         sys.stdout.write("Compile SWEB...")
