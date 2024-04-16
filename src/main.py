@@ -113,6 +113,7 @@ def main():
 
     # -r
     if arguments.run_test:
+        testsFail = False
         allFoundTests = getAllTests(noExclude=True)
         testsToRun = [ ]
 
@@ -131,8 +132,10 @@ def main():
         for test in testsToRun:
             if not (test in allFoundTests):
                 raise TestNotFoundException(f'Your specifyed test "{test}" was not found!')
-            utils.runTest(test)
+            if not utils.runTest(test):
+                testsFail = True
             utils.restoreUserProc()
+        return 1
 
     # if we just need to compile, return here
     if arguments.just_compile:
