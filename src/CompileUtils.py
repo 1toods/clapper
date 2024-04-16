@@ -153,6 +153,7 @@ class CompileUtils():
                 if invalid_error in line:
                     testSucc = False
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
+                    sys.stdout.flush()
                     #return True
                 if "ERROR" in line:
                     testSucc = False
@@ -164,9 +165,11 @@ class CompileUtils():
 
         if not testSucc:
             print(Fore.RED +"FAIL!" + '\033[39m')
+            sys.stdout.flush()
             return False
         else:
             print(Fore.GREEN + "PASS!" + '\033[39m')
+            sys.stdout.flush()
             return True
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
