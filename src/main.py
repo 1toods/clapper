@@ -132,7 +132,7 @@ def main():
         for test in testsToRun:
             if not (test in allFoundTests):
                 raise TestNotFoundException(f'Your specifyed test "{test}" was not found!')
-            if not utils.runTest(test):
+            if not utils.runTest(test, printLogOnFail=True):
                 testsFail = True
             utils.restoreUserProc()
         return 1
@@ -159,7 +159,7 @@ def main():
         for test in testsToRun:
             # need to compile for every test for user_progs changes to apply
             utils.compileSWEB()
-            if not utils.runTest(test):
+            if not utils.runTest(test, printLogOnFail=False):
                 testsFail = True
             utils.restoreUserProc()
         
