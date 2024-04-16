@@ -144,6 +144,7 @@ class CompileUtils():
     # returns true if test was successful
     def _parseTestLogfile(self, logFileName: str) -> bool:
         with open(logFileName, 'r') as logFile:
+            print(logFile.read())
             testSucc = False
             for line in logFile:
                 if "SUCCESS" in line:
