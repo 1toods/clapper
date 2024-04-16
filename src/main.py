@@ -161,7 +161,7 @@ def main():
             utils.restoreUserProc()
         
         # so gitlab ci detects an error
-        if testsFailed:
+        if testsFail:
             exit(1)
 
 if __name__ == '__main__':
