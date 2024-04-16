@@ -135,7 +135,7 @@ def main():
             if not utils.runTest(test, printLogOnFail=True):
                 testsFail = True
             utils.restoreUserProc()
-        return 1
+        sys.exit(1)
 
     # if we just need to compile, return here
     if arguments.just_compile:
@@ -159,13 +159,13 @@ def main():
         for test in testsToRun:
             # need to compile for every test for user_progs changes to apply
             utils.compileSWEB()
-            if not utils.runTest(test, printLogOnFail=False):
+            if not utils.runTest(test, False):
                 testsFail = True
             utils.restoreUserProc()
         
         # so gitlab ci detects an error
         if testsFail:
-            return -1
+            sys.exit(1)
 
 if __name__ == '__main__':
     init()
