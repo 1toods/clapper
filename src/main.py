@@ -162,7 +162,7 @@ def main():
         
         # so gitlab ci detects an error
         if testsFail:
-            exit(1)
+            return 1
 
 if __name__ == '__main__':
     init()
