@@ -147,18 +147,27 @@ class CompileUtils():
             testSucc = False
             for line in logFile:
                 if "SUCCESS" in line:
-                    print(Fore.GREEN + "PASS!" + '\033[39m')
-                    return True
+                    #print(Fore.GREEN + "PASS!" + '\033[39m')
+                    testSucc = True
+                    #return True
                 if invalid_error in line:
                     testSucc = False
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
-                    return True
-        if printLogOnFail:
+                    #return True
+                if "ERROR" in line:
+                    testSucc = False
+
+        if printLogOnFail and not testSucc:
             logFile = open(logFileName, 'r')
             print(logFile.read())
             logFile.close()
-        print(Fore.RED +"FAIL!" + '\033[39m')
-        return False
+
+        if not testSucc:
+            print(Fore.RED +"FAIL!" + '\033[39m')
+            return False
+        else:
+            print(Fore.GREEN + "PASS!" + '\033[39m')
+            return True
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
