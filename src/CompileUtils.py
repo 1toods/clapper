@@ -146,27 +146,35 @@ class CompileUtils():
     def _parseTestLogfile(self, logFileName: str, printLogOnFail) -> bool:
         with open(logFileName, 'r') as logFile:
             foundSucc = None
-            foundErr = None
             for line in logFile:
                 if "SUCCESS" in line:
                     foundSucc = True
                 if invalid_error in line:
                     foundErr = True
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
-                if line in noNoWords:
-                    foundErr = True
 
-        if printLogOnFail and foundErr:
-            logFile = open(logFileName, 'r')
-            print(logFile.read())
-            logFile.close()
+                    if printLogOnFail:
+                        logFile = open(logFileName, 'r')
+                        print(logFile.read())
+                        logFile.close()
+                    return False
 
-        if foundErr:
-            print(Fore.RED +"FAIL!" + '\033[39m')
-            return False
-        else:
+                for badWord in noNoWords:
+                    if badWord in line:
+                        print(Fore.RED +"FAIL!" + '\033[39m')
+
+                        if printLogOnFail:
+                            logFile = open(logFileName, 'r')
+                            print(logFile.read())
+                            logFile.close()
+                        return False
+
+        if foundSucc:
             print(Fore.GREEN + "PASS!" + '\033[39m')
             return True
+        else:
+            print(Fore.YELLOW + "INVALID!" + '\033[39m')
+            return False
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
