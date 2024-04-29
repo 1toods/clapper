@@ -5,6 +5,8 @@ import sys
 import time
 import argparse
 import traceback
+from sys import exit
+from signal import signal, SIGINT
 
 from CompileUtils import CompileUtils
 from SwebExceptions import *
@@ -15,12 +17,24 @@ RUNNER_DEFAULT_TIMEOUT = 7
 workingDir = ""
 excludeTests = [ "shell", "mult", "clock_test", "fail_test" ]
 
+compileUtils = None
+
 def init():
+    signal(SIGINT, keyboardInterruptHandler)
+
     if not os.path.exists("/tmp/clapper/"):
             os.makedirs("/tmp/clapper/")
 
     if not os.path.exists("/tmp/clapper/logs"):
         os.makedirs("/tmp/clapper/logs/")
+
+# handle SIGINT and restore user progs
+def keyboardInterruptHandler(signal, frame):
+    global compileUtils
+    compileUtils.restoreUserProc()
+    sys.stdout.write("\n-> You killed the runner!\n")
+    sys.stdout.flush()
+    exit(0)
 
 def getAllTests(noExclude=False) -> [ ]:
     tests = [ ]
@@ -104,6 +118,9 @@ def main():
 
     changeToWorkingDir()
     utils = CompileUtils(workingDir, runnerTimeout)
+
+    global compileUtils
+    compileUtils = utils
 
     if arguments.list_tests:
         allTests = getAllTests()
