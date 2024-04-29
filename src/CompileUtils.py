@@ -173,6 +173,7 @@ class CompileUtils():
             stdout=subprocess.PIPE, # otherwise no userspace test output is in logfile!
             stderr=subprocess.PIPE,
             universal_newlines=True)
+        
 
         # wait runtimeout and then kill the child
         time.sleep(self.RUN_TIMEOUT)
@@ -190,6 +191,24 @@ class CompileUtils():
         # run tests and parse output
         self.addTest(testName)
         self.compileSWEB()
+
+        #Begin: code von kevin
+        file_timeout = open("/home/kevin/clapper/src/set_biggertimeout.txt", "r")
+        lines_in_file = file_timeout.readlines()
+
+        testname_in_file = 0
+        for line in lines_in_file:
+            if line.strip() == testName:
+                testname_in_file = 1
+
+        if testname_in_file == 1:
+            self.RUN_TIMEOUT = 17
+        else:
+            self.RUN_TIMEOUT = 5
+        file_timeout.close()
+        #END: code von kevin
+
+
         self._runQemu(logFileName, self.RUN_TIMEOUT)
 
         testResult = self._parseTestLogfile(logFileName, printLogOnFail)
