@@ -8,13 +8,14 @@ import io
 import sys
 import time
 import shlex
-import subprocess
 import pexpect
+import subprocess
 from colorama import Fore, Back, Style
 
 from SwebExceptions import *
 
 invalid_error = "MinixFSInode::loadChildren: inode nr. 14 not set in bitmap, but occurs in directory-entry; maybe filesystem was not properly unmounted last time"
+noNoWords = ["ERROR", "KERNEL PANIC"]
 
 class CompileUtils():
 
@@ -144,27 +145,36 @@ class CompileUtils():
     # returns true if test was successful
     def _parseTestLogfile(self, logFileName: str, printLogOnFail) -> bool:
         with open(logFileName, 'r') as logFile:
-            testSucc = False
+            foundSucc = None
             for line in logFile:
                 if "SUCCESS" in line:
-                    testSucc = True
+                    foundSucc = True
                 if invalid_error in line:
-                    testSucc = False
+                    foundErr = True
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
-                if "ERROR" in line:
-                    testSucc = False
 
-        if printLogOnFail and not testSucc:
-            logFile = open(logFileName, 'r')
-            print(logFile.read())
-            logFile.close()
+                    if printLogOnFail:
+                        logFile = open(logFileName, 'r')
+                        print(logFile.read())
+                        logFile.close()
+                    return False
 
-        if not testSucc:
-            print(Fore.RED +"FAIL!" + '\033[39m')
-            return False
-        else:
+                for badWord in noNoWords:
+                    if badWord in line:
+                        print(Fore.RED +"FAIL!" + '\033[39m')
+
+                        if printLogOnFail:
+                            logFile = open(logFileName, 'r')
+                            print(logFile.read())
+                            logFile.close()
+                        return False
+
+        if foundSucc:
             print(Fore.GREEN + "PASS!" + '\033[39m')
             return True
+        else:
+            print(Fore.YELLOW + "INVALID!" + '\033[39m')
+            return False
     
     def _runQemu(self,logFileName: str, timeout: int) -> None:
         # TODO: configure so that gitlab runner sees the stdio output
