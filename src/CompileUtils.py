@@ -8,8 +8,8 @@ import io
 import sys
 import time
 import shlex
-import subprocess
 import pexpect
+import subprocess
 from colorama import Fore, Back, Style
 
 from SwebExceptions import *
@@ -145,22 +145,23 @@ class CompileUtils():
     # returns true if test was successful
     def _parseTestLogfile(self, logFileName: str, printLogOnFail) -> bool:
         with open(logFileName, 'r') as logFile:
-            testSucc = False
+            foundSucc = None
+            foundErr = None
             for line in logFile:
                 if "SUCCESS" in line:
-                    testSucc = True
+                    foundSucc = True
                 if invalid_error in line:
-                    testSucc = False
+                    foundErr = True
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
                 if line in noNoWords:
-                    testSucc = False
+                    foundErr = True
 
         if printLogOnFail and not testSucc:
             logFile = open(logFileName, 'r')
             print(logFile.read())
             logFile.close()
 
-        if not testSucc:
+        if foundErr:
             print(Fore.RED +"FAIL!" + '\033[39m')
             return False
         else:
