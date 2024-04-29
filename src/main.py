@@ -22,9 +22,6 @@ def init():
     if not os.path.exists("/tmp/clapper/logs"):
         os.makedirs("/tmp/clapper/logs/")
 
-def print_my_stuff():
-    print("HELLO I WAS IN HERE")
-
 def getAllTests(noExclude=False) -> [ ]:
     tests = [ ]
     testFiles = os.listdir(f'{workingDir}userspace/tests/')
