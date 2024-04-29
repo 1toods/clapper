@@ -10,6 +10,7 @@ import time
 import shlex
 import pexpect
 import subprocess
+from pathlib import Path
 from colorama import Fore, Back, Style
 
 from SwebExceptions import *
@@ -203,7 +204,10 @@ class CompileUtils():
         self.compileSWEB()
 
         #Begin: code von kevin
-        file_timeout = open("/home/kevin/clapper/src/set_biggertimeout.txt", "r")
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        file_timeout = dir_path + '/set_biggertimeout.txt'
+
+        file_timeout = open(file_timeout, "r")
         lines_in_file = file_timeout.readlines()
 
         testname_in_file = 0
