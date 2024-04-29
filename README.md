@@ -47,6 +47,9 @@ Flags to choose from:
 | -l   | List all tests in userspace/tests.                                                                                                                                                              |
 | -t   | Timeout in seconds. Defaults to 7. This is also the time after which a test is shut down to check the output log. This means that the `timeout` flag also specifyes the runtime of each test. |
 
+If some of your testcases take longer to run, then you can add them to the file src/set_biggertimeout.txt. These testcases will have a timeout of 17 seconds. The testcases which are not in the file will have the default timeout 7.
+
+
 ### Working Examples
 
 Just compile SWEB:

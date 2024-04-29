@@ -214,7 +214,7 @@ class CompileUtils():
         if testname_in_file == 1:
             self.RUN_TIMEOUT = 17
         else:
-            self.RUN_TIMEOUT = 5
+            self.RUN_TIMEOUT = 7
         file_timeout.close()
         #END: code von kevin
 
