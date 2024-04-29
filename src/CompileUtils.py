@@ -15,6 +15,7 @@ from colorama import Fore, Back, Style
 from SwebExceptions import *
 
 invalid_error = "MinixFSInode::loadChildren: inode nr. 14 not set in bitmap, but occurs in directory-entry; maybe filesystem was not properly unmounted last time"
+noNoWords = ["ERROR", "KERNEL PANIC"]
 
 class CompileUtils():
 
@@ -151,7 +152,7 @@ class CompileUtils():
                 if invalid_error in line:
                     testSucc = False
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
-                if "ERROR" in line:
+                if line in noNoWords:
                     testSucc = False
 
         if printLogOnFail and not testSucc:
