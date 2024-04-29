@@ -156,7 +156,7 @@ class CompileUtils():
                 if line in noNoWords:
                     foundErr = True
 
-        if printLogOnFail and not testSucc:
+        if printLogOnFail and foundErr:
             logFile = open(logFileName, 'r')
             print(logFile.read())
             logFile.close()
