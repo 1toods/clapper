@@ -17,6 +17,7 @@ from SwebExceptions import *
 
 invalid_error = "MinixFSInode::loadChildren: inode nr. 14 not set in bitmap, but occurs in directory-entry; maybe filesystem was not properly unmounted last time"
 noNoWords = ["ERROR", "KERNEL PANIC"]
+shellStrings = [ "SWEB: />", "SWEB-Pseudo-Shell Starting..." ]
 
 class CompileUtils():
 
@@ -147,9 +148,13 @@ class CompileUtils():
     def _parseTestLogfile(self, logFileName: str, printLogOnFail) -> bool:
         with open(logFileName, 'r') as logFile:
             foundSucc = None
+            foundShell = False
             for line in logFile:
                 if "SUCCESS" in line:
                     foundSucc = True
+                for shellStr in shellStrings:
+                    if shellStr in line:
+                        foundShell = True
                 if invalid_error in line:
                     foundErr = True
                     print(Fore.YELLOW + "INVALID!" + '\033[39m')
@@ -162,7 +167,7 @@ class CompileUtils():
 
                 for badWord in noNoWords:
                     if badWord in line:
-                        print(Fore.RED +"FAIL!" + '\033[39m')
+                        print(Fore.RED + f"FAIL! | [{badWord}]" + '\033[39m')
 
                         if printLogOnFail:
                             logFile = open(logFileName, 'r')
@@ -170,9 +175,12 @@ class CompileUtils():
                             logFile.close()
                         return False
 
-        if foundSucc:
+        if foundSucc and foundShell:
             print(Fore.GREEN + "PASS!" + '\033[39m')
             return True
+        if foundSucc and not foundShell:
+            print(Fore.RED + f"FAIL! | [No Return To Shell]" + '\033[39m')
+            return False
         else:
             print(Fore.YELLOW + "INVALID!" + '\033[39m')
             return False
